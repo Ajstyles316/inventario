@@ -1,0 +1,23 @@
+{% extends "inventario/base.html" %}
+
+{% block title %}{% if object %}Editar producto{% else %}Nuevo producto{% endif %}{% endblock %}
+{% block heading %}{% if object %}Editar producto{% else %}Nuevo producto{% endif %}{% endblock %}
+
+{% block content %}
+<div class="panel" style="max-width: 720px;">
+    <div class="panel-b">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <button class="btn btn-pine" type="submit">Guardar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'producto_lista' %}">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

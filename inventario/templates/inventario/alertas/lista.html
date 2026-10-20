@@ -1,0 +1,23 @@
+{% extends "inventario/base.html" %}
+
+{% block title %}Alertas{% endblock %}
+{% block heading %}Productos bajo el mínimo{% endblock %}
+
+{% block content %}
+<p class="muted">Estos productos activos tienen menos piezas que su stock mínimo. La solución habitual es registrar una compra (entrada).</p>
+<div class="card-grid">
+    {% for p in productos %}
+    <article class="cat-card">
+        {% if p.imagen_url %}<img src="{{ p.imagen_url }}" alt="{{ p.nombre }}">{% endif %}
+        <div class="body">
+            <h2 class="h5">{{ p.nombre }}</h2>
+            <p class="muted small">{{ p.codigo }} · {{ p.categoria }}</p>
+            <p>Stock <strong>{{ p.stock }}</strong> · mínimo {{ p.stock_minimo }}</p>
+            <a class="btn btn-sm btn-clay" href="{% url 'movimiento_crear' %}?producto={{ p.pk }}">Registrar entrada</a>
+        </div>
+    </article>
+    {% empty %}
+        <div class="panel panel-b">Todo en orden: ningún producto activo está bajo el mínimo.</div>
+    {% endfor %}
+</div>
+{% endblock %}

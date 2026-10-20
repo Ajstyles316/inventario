@@ -1,0 +1,56 @@
+{% extends "inventario/base.html" %}
+
+{% block title %}Categorías{% endblock %}
+{% block heading %}Categorías del catálogo{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <p class="muted mb-0">No se eliminan: se desactivan para conservar el historial de productos.</p>
+    {% if es_administrador %}
+        <a class="btn btn-pine" href="{% url 'categoria_crear' %}">Nueva categoría</a>
+    {% endif %}
+</div>
+
+<form class="panel panel-b mb-4 d-flex flex-wrap gap-2" method="get">
+    <input class="form-control" style="max-width:280px" name="q" value="{{ q }}" placeholder="Buscar categoría">
+    <select class="form-select" style="max-width:180px" name="estado">
+        <option value="activas" {% if estado == 'activas' %}selected{% endif %}>Activas</option>
+        <option value="inactivas" {% if estado == 'inactivas' %}selected{% endif %}>Inactivas</option>
+        <option value="todas" {% if estado == 'todas' %}selected{% endif %}>Todas</option>
+    </select>
+    <button class="btn btn-outline-secondary" type="submit">Filtrar</button>
+</form>
+
+<div class="card-grid">
+    {% for categoria in categorias %}
+    <article class="cat-card">
+        {% if categoria.imagen_url %}
+            <img src="{{ categoria.imagen_url }}" alt="{{ categoria.nombre }}">
+        {% endif %}
+        <div class="body">
+            <div class="d-flex justify-content-between">
+                <h2 class="h5 mb-1">{{ categoria.nombre }}</h2>
+                <span class="pill {% if categoria.activo %}pill-on{% else %}pill-off{% endif %}">
+                    {% if categoria.activo %}Activa{% else %}Inactiva{% endif %}
+                </span>
+            </div>
+            <p class="muted small">{{ categoria.descripcion|default:"Sin descripción" }}</p>
+            <p class="small mb-3">{{ categoria.n_productos }} producto{{ categoria.n_productos|pluralize:"s" }}</p>
+            {% if es_administrador %}
+            <div class="d-flex gap-2">
+                <a class="btn btn-sm btn-outline-secondary" href="{% url 'categoria_editar' categoria.pk %}">Editar</a>
+                <form method="post" action="{% url 'categoria_toggle' categoria.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-warning" type="submit">
+                        {% if categoria.activo %}Desactivar{% else %}Activar{% endif %}
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+        <p>No hay categorías con ese filtro.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "inventario/base.html" %}
+
+{% block title %}Nuevo movimiento{% endblock %}
+{% block heading %}Registrar entrada o salida{% endblock %}
+
+{% block content %}
+<div class="panel" style="max-width: 640px;">
+    <div class="panel-b">
+        <p class="muted">Una salida no puede ser mayor al stock disponible.</p>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+            {% for field in form %}
+            <div class="mb-3">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors|striptags }}</div>{% endif %}
+            </div>
+            {% endfor %}
+            <button class="btn btn-pine" type="submit">Registrar</button>
+            <a class="btn btn-outline-secondary" href="{% url 'movimiento_lista' %}">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

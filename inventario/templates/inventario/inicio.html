@@ -1,0 +1,78 @@
+{% extends "inventario/base.html" %}
+{% load humanize %}
+
+{% block title %}Inicio{% endblock %}
+{% block heading %}Resumen del día{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <p class="mb-1">NovaStock</p>
+    <h1 class="display-6">Existencias claras, sin adivinar el stock.</h1>
+    <p class="mb-0">Cada compra y cada venta queda en el historial. Si falta mercancía, la alerta aparece aquí.</p>
+</section>
+
+<div class="stat-grid">
+    <div class="stat"><span>Productos activos</span><strong>{{ total_productos }}</strong></div>
+    <div class="stat"><span>Categorías</span><strong>{{ total_categorias }}</strong></div>
+    <div class="stat"><span>Movimientos hoy</span><strong>{{ movimientos_hoy }}</strong></div>
+    <div class="stat"><span>Alertas de stock</span><strong>{{ alertas }}</strong></div>
+    <div class="stat"><span>Valor de compra en almacén</span><strong>${{ valor_inventario|floatformat:2|intcomma }}</strong></div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="panel">
+            <div class="panel-h d-flex justify-content-between">
+                <strong>Últimos movimientos</strong>
+                <a href="{% url 'movimiento_lista' %}">Ver todos</a>
+            </div>
+            <div class="panel-b">
+                {% for m in ultimos_movimientos %}
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <div>
+                            <span class="pill {% if m.tipo == 'ENTRADA' %}pill-in{% else %}pill-out{% endif %}">{{ m.get_tipo_display }}</span>
+                            {{ m.producto.nombre }}
+                            <div class="muted small">{{ m.get_motivo_display }} · {{ m.usuario }}</div>
+                        </div>
+                        <div class="text-end">
+                            <strong>{{ m.cantidad }}</strong>
+                            <div class="muted small">{{ m.fecha|date:"d M H:i" }}</div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="muted mb-0">Todavía no hay movimientos.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="panel mb-4">
+            <div class="panel-h d-flex justify-content-between">
+                <strong>Stock bajo</strong>
+                <a href="{% url 'alerta_lista' %}">Alertas</a>
+            </div>
+            <div class="panel-b">
+                {% for p in productos_alerta %}
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <a href="{% url 'producto_detalle' p.pk %}">{{ p.nombre }}</a>
+                        <span>{{ p.stock }} / mín. {{ p.stock_minimo }}</span>
+                    </div>
+                {% empty %}
+                    <p class="muted mb-0">Ningún producto activo está bajo el mínimo.</p>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-h"><strong>Categorías</strong></div>
+            <div class="panel-b">
+                {% for c in categorias_destacadas %}
+                    <div class="d-flex justify-content-between py-1">
+                        <span>{{ c.nombre }}</span>
+                        <span class="muted">{{ c.n_productos }} prod.</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
